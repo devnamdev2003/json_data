@@ -11,8 +11,13 @@ class MyModelListCreateAPIView(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response("Data created successfully.", status=status.HTTP_201_CREATED)
+            instance = serializer.save()
+            data = {
+                "id": instance.id,
+                "json_data": instance.json_data,
+                "message": "Data created successfully."
+            }
+            return Response(data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
