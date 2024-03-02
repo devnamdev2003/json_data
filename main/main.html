@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Topics</title>
+    <link
+      rel="stylesheet"
+      href="https://devnamdev2003.github.io/md/assets/css/style.css?v=34747b1420bd03a54ca6fd5fc471df6cdd489c8d"
+    />
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      <h1 class="text-center">
+        <a href="/main.html" id="topic">Topics</a>
+      </h1>
+      <div id="topics"></div>
+    </div>
+    <br />
+    <br />
+    <script>
+      fetch("https://json-data-xikp.onrender.com/api/")
+        .then((response) => response.json())
+        .then((data) => {
+          const topicsList = document.querySelector("#topics");
+          data.forEach((item) => {
+            topicsList.innerHTML += `<h3 id="${item.json_data.topic}">
+                <a href="./result.html?id=${item.id}">${item.json_data.topic}</a>
+              </h3>`;
+          });
+        })
+        .catch((error) => console.error("Error:", error));
+    </script>
+  </body>
+</html>

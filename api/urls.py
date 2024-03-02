@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import MyModelListCreateAPIView, MyModelRetrieveUpdateDestroyAPIView
+from .views import my_model_list, my_model_detail
 
 urlpatterns = [
-    path('', MyModelListCreateAPIView.as_view(), name='mymodel-list-create'),
-    path('<int:pk>/', MyModelRetrieveUpdateDestroyAPIView.as_view(), name='mymodel-detail'),
+    path('', my_model_list),
+    path('<int:pk>/', my_model_detail),
 ]

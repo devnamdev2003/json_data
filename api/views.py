@@ -1,51 +1,42 @@
-from rest_framework import generics, status
+# views.py
+from rest_framework import status
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import MyModel
 from .serializers import MyModelSerializer
 
+@api_view(['GET', 'POST'])
+def my_model_list(request):
+    if request.method == 'GET':
+        my_models = MyModel.objects.all()
+        serializer = MyModelSerializer(my_models, many=True)
+        return Response(serializer.data)
 
-class MyModelListCreateAPIView(generics.ListCreateAPIView):
-    queryset = MyModel.objects.all()
-    serializer_class = MyModelSerializer
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            instance = serializer.save()
-            data = {
-                "id": instance.id,
-                "json_data": instance.json_data,
-                "message": "Data created successfully."
-            }
-            return Response(data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class MyModelRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = MyModel.objects.all()
-    serializer_class = MyModelSerializer
-
-    def put(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data)
+    elif request.method == 'POST':
+        serializer = MyModelSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response("Data updated successfully.")
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response("Data deleted successfully.")
+@api_view(['GET', 'PUT', 'DELETE'])
+def my_model_detail(request, pk):
+    try:
+        my_model = MyModel.objects.get(pk=pk)
+    except MyModel.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
-    def perform_destroy(self, instance):
-        instance.delete()
-        return Response("Data deleted successfully.")
+    if request.method == 'GET':
+        serializer = MyModelSerializer(my_model)
+        return Response(serializer.data)
 
-    def destroy(self, request, *args, **kwargs):
-        try:
-            instance = self.get_object()
-            self.perform_destroy(instance)
-            return Response("Data deleted successfully.")
-        except:
-            return Response("Data not found.", status=status.HTTP_404_NOT_FOUND)
+    elif request.method == 'PUT':
+        serializer = MyModelSerializer(my_model, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        my_model.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

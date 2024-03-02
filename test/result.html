@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Topic Details</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://devnamdev2003.github.io/md/assets/css/style.css?v=34747b1420bd03a54ca6fd5fc471df6cdd489c8d"
+    />
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h1 class="text-center">
+        <a href="" id="topic"></a>
+      </h1>
+      <div class="card mt-3">
+        <div class="container-lg px-3 my-5 markdown-body" id="topicText"></div>
+      </div>
+    </div>
+
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const topicId = urlParams.get("id");
+      fetch(`http://127.0.0.1:8000/api`)
+        .then((response) => response.json())
+        .then((data) => {
+          const topicData = data.find((item) => item.id === parseInt(topicId));
+          if (topicData) {
+            document.getElementById("topic").innerText =
+              topicData.json_data.topic;
+            topic.href = window.location.href;
+            document.getElementById("topicText").innerHTML = marked.parse(
+              topicData.json_data.textare
+            );
+          } else {
+            document.getElementById("topicText").innerHTML = "Topic not found";
+          }
+        })
+        .catch((error) => console.error("Error:", error));
+    </script>
+  </body>
+</html>
